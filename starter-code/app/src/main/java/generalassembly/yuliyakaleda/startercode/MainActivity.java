@@ -1,27 +1,55 @@
 package generalassembly.yuliyakaleda.startercode;
 
+import android.animation.LayoutTransition;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+  EditText mInput;
+  TextView mYourWish;
+  LinearLayout mWishList;
+  Button mMakeWish;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
 
-    //TODO: set up all the view and event listeners.
+    mInput = (EditText) findViewById(R.id.input);
+    mYourWish = (TextView) findViewById(R.id.your_wish);
+    mWishList = (LinearLayout) findViewById(R.id.wish_list);
+    mMakeWish = (Button) findViewById(R.id.button);
+
+    mMakeWish.setOnClickListener(MainActivity.this);
+
+    LayoutTransition transition = new LayoutTransition();
+    transition.enableTransitionType(LayoutTransition.CHANGING);
+    mWishList.setLayoutTransition(transition);
   }
 
-  @Override
   public void onClick(View v) {
-    // TODO: 1. get the text from the input field
-    //       2. animate it in the center of the screen
-    //       3. add it to the list wish
-    //       4. clear the input field
+    String wish = mInput.getText().toString();
+    if (wish.isEmpty()) {
+      mInput.setError("Enter your wish first!");
+      return;
+    }
+
+    mYourWish.setText(wish);
+    mInput.setText(null);
+
+    Animation animation = AnimationUtils.loadAnimation(MainActivity.this, R.anim.animation);
+    mYourWish.startAnimation(animation);
+
+    TextView listItem = new TextView(MainActivity.this);
+    listItem.setText(wish);
+
+    mWishList.addView(listItem);
   }
 }
