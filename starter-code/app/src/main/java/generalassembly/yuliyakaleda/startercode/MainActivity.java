@@ -15,11 +15,15 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-  EditText mInput;
-  TextView mYourWish;
-  LinearLayout mWishList;
-  Button mMakeWish;
+  private static final String VIEW_LIST_KEY = "view_list_key";
+
+  private EditText mInput;
+  private TextView mYourWish;
+  private LinearLayout mWishList;
+  private Button mMakeWish;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +40,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     LayoutTransition transition = new LayoutTransition();
     transition.enableTransitionType(LayoutTransition.CHANGING);
     mWishList.setLayoutTransition(transition);
+
+    if (savedInstanceState != null && savedInstanceState.containsKey(VIEW_LIST_KEY)) {
+      ArrayList<View> viewList = (ArrayList<View>) savedInstanceState.getSerializable(VIEW_LIST_KEY);
+      for (View v : viewList) {
+        mWishList.addView(v);
+      }
+    }
+  }
+
+  @Override
+  protected void onSaveInstanceState(Bundle outState) {
+    ArrayList<View> viewList = new ArrayList<>();
+    if (mWishList.getChildCount() > 0) {
+      for (int i = 0; i < mWishList.getChildCount(); i++) {
+        viewList.add(mWishList.getChildAt(i));
+      }
+      mWishList.removeAllViews();
+      outState.putSerializable(VIEW_LIST_KEY, viewList);
+    }
+    super.onSaveInstanceState(outState);
   }
 
   public void onClick(View v) {
